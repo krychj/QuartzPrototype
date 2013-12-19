@@ -5,19 +5,27 @@ import java.util.Date;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.JobListener;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.matchers.KeyMatcher;
+
 import static org.quartz.CronScheduleBuilder.*;
+import static org.quartz.JobKey.*;
+import static org.quartz.impl.matchers.GroupMatcher.*;
+
 
 public class QuartzMain {
 
 	public static void main(String[] args) throws InterruptedException {
 		try {
+			JobKey jobKey = new JobKey("job1", "group1");
 			JobDetail job = JobBuilder.newJob(HelloJob.class)
-				    .withIdentity("job1", "group1")
+				    .withIdentity(jobKey)
 				    .build();
 			
 			
@@ -33,9 +41,13 @@ public class QuartzMain {
 	    	
 	    	// Grab the Scheduler instance from the Factory
 			Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-			scheduler.scheduleJob(job, trigger2);
+			JobListener myJobListener = new HelloJobListenerImpl();
+			scheduler.getListenerManager().addJobListener(myJobListener, KeyMatcher.keyEquals(jobKey));
+			
+		
 			// and start it off
 			scheduler.start();
+			scheduler.scheduleJob(job, trigger2);
 			
 			Thread.sleep(90L * 1000L);
 			scheduler.shutdown();

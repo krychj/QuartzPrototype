@@ -50,13 +50,13 @@ public class HelloJob implements Job {
 		inputDataStage.execute();
 		processingDataStage.execute();
 		outputDataStage.execute();
-		System.out.println("");
+		/*System.out.println("");
 		try {
 			Thread.sleep(20L * 1000L);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public void setJobSays(String jobSays) {
